@@ -1,4 +1,4 @@
-﻿namespace TaleLearnCode.RandomContent.Facts.Data.Models;
+﻿namespace TaleLearnCode.RandomContent.Quotes.Data.Models;
 
 internal static class StaticValues
 {

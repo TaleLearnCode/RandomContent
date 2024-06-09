@@ -1,4 +1,4 @@
-﻿namespace TaleLearnCode.RandomContent.Facts.Data;
+﻿namespace TaleLearnCode.RandomContent.Quotes.Data;
 
 internal static partial class CreateModel
 {

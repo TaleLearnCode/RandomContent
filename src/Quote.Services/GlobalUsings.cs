@@ -1,6 +1,6 @@
 ﻿global using Microsoft.EntityFrameworkCore;
-global using TaleLearnCode.RandomContent.Facts.Data;
-global using TaleLearnCode.RandomContent.Facts.Data.Models;
-global using TaleLearnCode.RandomContent.Facts.Extensions;
-global using TaleLearnCode.RandomContent.Facts.Requests;
-global using TaleLearnCode.RandomContent.Facts.Responses;
+global using TaleLearnCode.RandomContent.Quotes.Data;
+global using TaleLearnCode.RandomContent.Quotes.Data.Models;
+global using TaleLearnCode.RandomContent.Quotes.Extensions;
+global using TaleLearnCode.RandomContent.Quotes.Requests;
+global using TaleLearnCode.RandomContent.Quotes.Responses;

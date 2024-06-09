@@ -1,4 +1,4 @@
-﻿namespace TaleLearnCode.RandomContent.Facts.Requests;
+﻿namespace TaleLearnCode.RandomContent.Quotes.Requests;
 
 public class QuoteRequest
 {

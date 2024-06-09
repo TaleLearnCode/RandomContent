@@ -1,6 +1,6 @@
 ﻿#nullable disable
 
-namespace TaleLearnCode.RandomContent.Facts.Data.Models;
+namespace TaleLearnCode.RandomContent.Quotes.Data.Models;
 
 /// <summary>
 /// A quote from someone famous or interesting.

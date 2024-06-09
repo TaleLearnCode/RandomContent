@@ -1,6 +1,6 @@
 ﻿#nullable disable
 
-namespace TaleLearnCode.RandomContent.Facts.Data;
+namespace TaleLearnCode.RandomContent.Quotes.Data;
 
 public class QuoteContext : DbContext
 {

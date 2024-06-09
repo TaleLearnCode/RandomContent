@@ -1,4 +1,4 @@
-﻿namespace TaleLearnCode.RandomContent.Facts.Extensions;
+﻿namespace TaleLearnCode.RandomContent.Quotes.Extensions;
 
 internal static class QuoteExtensions
 {

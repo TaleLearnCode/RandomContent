@@ -1,16 +1,16 @@
-﻿using TaleLearnCode.RandomContent.Facts.Data;
-using TaleLearnCode.RandomContent.Facts.Extensions;
+﻿namespace TaleLearnCode.RandomContent.Quotes;
 
-namespace TaleLearnCode.RandomContent.Quotes;
-
-public class Services
+public class QuoteServices
 {
 
-	public static async Task<QuoteResponse?> GetQuote(int id)
+	public static async Task<QuoteResponse?> GetQuoteAsync(int id)
 	{
 
 		using QuoteContext context = new();
-		Quote? quote = await context.Quotes.FindAsync(id);
+		Quote? quote = await context.Quotes
+			.Include(x => x.QuoteCategories)
+				.ThenInclude(x => x.Category)
+			.FirstOrDefaultAsync(x => x.QuoteId == id);
 		return quote.ToResponse();
 	}
 
@@ -26,6 +26,16 @@ public class Services
 			.Take(pageSize)
 			.ToListAsync();
 		return quotes.ToResponse(totalCount, pageSize, pageCount, pageIndex);
+	}
+
+	public static async Task<QuoteResponse?> GetRandomQuoteAsync()
+	{
+		using QuoteContext context = new();
+		int count = await context.Quotes.CountAsync();
+		if (count == 0)
+			return null;
+		int randomId = new Random().Next(1, count + 1);
+		return await GetQuoteAsync(randomId);
 	}
 
 	public static async Task<int> CreateQuoteAsync(QuoteRequest quoteRequest)
@@ -63,6 +73,25 @@ public class Services
 		return quotes.ToResponse(totalCount, pageSize, pageIndex, pageCount);
 	}
 
+	public static async Task<QuoteResponse?> GetRandomQuoteForCategoryAsync(string category)
+	{
+		using QuoteContext context = new();
+		int count = await context.Quotes
+			.Where(x => x.QuoteCategories.Any(x => x.Category.CategoryName == category))
+			.CountAsync();
+		if (count == 0)
+			return null;
+		int randomId = new Random().Next(1, count + 1);
+		return await context.Quotes
+			.Include(x => x.QuoteCategories)
+				.ThenInclude(x => x.Category)
+			.Where(x => x.QuoteCategories.Any(x => x.Category.CategoryName == category))
+			.Skip(randomId - 1)
+			.Take(1)
+			.Select(x => x.ToResponse())
+			.FirstOrDefaultAsync();
+	}
+
 	public static async Task<List<string>> GetAuthorsAsync()
 	{
 		QuoteContext context = new();
@@ -73,6 +102,8 @@ public class Services
 	{
 		QuoteContext context = new();
 		int totalCount = await context.Quotes
+			.Include(x => x.QuoteCategories)
+				.ThenInclude(x => x.Category)
 			.Where(x => x.Author == author)
 			.CountAsync();
 		int pageCount = (totalCount > 0) ? (int)Math.Ceiling(totalCount / (double)pageSize) : 0;
@@ -84,7 +115,26 @@ public class Services
 		return quotes.ToResponse(totalCount, pageSize, pageIndex, pageCount);
 	}
 
-	public static async Task UpdateAsync(int id, QuoteRequest quoteRequest)
+	public static async Task<QuoteResponse?> GetRandomQuoteForAuthorAsync(string author)
+	{
+		using QuoteContext context = new();
+		int count = await context.Quotes
+			.Where(x => x.Author == author)
+			.CountAsync();
+		if (count == 0)
+			return null;
+		int randomId = new Random().Next(1, count + 1);
+		return await context.Quotes
+			.Include(x => x.QuoteCategories)
+				.ThenInclude(x => x.Category)
+			.Where(x => x.Author == author)
+			.Skip(randomId - 1)
+			.Take(1)
+			.Select(x => x.ToResponse())
+			.FirstOrDefaultAsync();
+	}
+
+	public static async Task UpdateQuoteAsync(int id, QuoteRequest quoteRequest)
 	{
 		QuoteContext context = new();
 		Quote? quote = await RetrieveQuoteAsync(id, context)
@@ -97,7 +147,7 @@ public class Services
 		await AddCategoriesToQuoteAsync(context, quote, quoteRequest.Categories);
 	}
 
-	public static async Task DeleteAsync(int id)
+	public static async Task DeleteQuoteAsync(int id)
 	{
 		QuoteContext context = new();
 		Quote? quote = await RetrieveQuoteAsync(id, context)
