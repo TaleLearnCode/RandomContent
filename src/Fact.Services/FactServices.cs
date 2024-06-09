@@ -23,6 +23,21 @@ public static class FactServices
 		return facts.ToResponse(totalCount, pageSize, pageCount, pageIndex);
 	}
 
+	public static async Task<FactResponse?> GetRandomFactAsync()
+	{
+		FactContext context = new();
+		int count = await context.Facts.CountAsync();
+		if (count == 0)
+			return null;
+		int skip = new Random().Next(0, count);
+		Fact fact = await context.Facts
+			.Include(x => x.FactCategories)
+				.ThenInclude(x => x.Category)
+			.Skip(skip)
+			.FirstAsync();
+		return fact.ToResponse();
+	}
+
 	public static async Task<int> CreateFactAsync(FactRequest request)
 	{
 		FactContext context = new();
@@ -65,7 +80,7 @@ public static class FactServices
 			.Select(x => x.CategoryName).ToListAsync();
 	}
 
-	public static async Task<FactResponseList> GetFactsForCategory(string category, int pageIndex = 1, int pageSize = 10)
+	public static async Task<FactResponseList> GetFactsForCategoryAsync(string category, int pageIndex = 1, int pageSize = 10)
 	{
 		FactContext context = new();
 		int totalCount = await context.Facts
@@ -82,6 +97,26 @@ public static class FactServices
 			.Take(pageSize)
 			.ToListAsync();
 		return facts.ToResponse(totalCount, pageSize, pageCount, pageIndex);
+	}
+
+	public static async Task<FactResponse?> GetRandomFactForCategoryAsync(string category)
+	{
+		FactContext context = new();
+		int count = await context.Facts
+			.Include(x => x.FactCategories)
+				.ThenInclude(x => x.Category)
+			.Where(x => x.FactCategories.Any(x => x.Category.CategoryName == category))
+			.CountAsync();
+		if (count == 0)
+			return null;
+		int skip = new Random().Next(0, count);
+		Fact fact = await context.Facts
+			.Include(x => x.FactCategories)
+				.ThenInclude(x => x.Category)
+			.Where(x => x.FactCategories.Any(x => x.Category.CategoryName == category))
+			.Skip(skip)
+			.FirstAsync();
+		return fact.ToResponse();
 	}
 
 	private static async Task<Fact?> RetrieveFactAsync(int id, FactContext? context = null)
